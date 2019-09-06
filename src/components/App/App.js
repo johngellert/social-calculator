@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import {
   HashRouter as Router,
@@ -10,21 +10,29 @@ import { connect } from "react-redux";
 
 import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
 
-import AboutPage from "../AboutPage/AboutPage";
 import UserPage from "../UserPage/UserPage";
-import InfoPage from "../InfoPage/InfoPage";
-import NavDrawer from "../NavDrawer/NavDrawer";
 
-function App() {
+function App(props) {
+
+  useEffect(() => {props.dispatch({type: 'FETCH_USER'})}, []);
+
   return (
     <Router>
-      <div className="App">
-        <header className="App-header">
-          <h1>Social Calculator</h1>
-        </header>
-      </div>
+      <Switch>
+        {/* Visiting localhost:3000 will redirect to localhost:3000/home */}
+        <Redirect exact from="/" to="/home" />
+        <ProtectedRoute exact path="/home" component={UserPage} />
+        <Route render={() => <h1>404</h1>} />
+      </Switch>
     </Router>
   );
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    loginMode: state.loginMode,
+    user: state.user,
+  }
+}
+
+export default connect(mapStateToProps)(App);
